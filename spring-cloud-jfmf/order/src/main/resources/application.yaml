@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: order
+  datasource:
+    url: jdbc:mysql://localhost:3306/jfmf?serverTimezone=GMT%2b8
+    password: "123456"
+    username: root
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true
+
+server:
+  port: 4001
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.jfmf.order.order.domain.**
+  configuration:
+          log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:2001/eureka/
+  instance:
+    #prefer-ip-address: true
+    preferIpAddress: true
+  instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+

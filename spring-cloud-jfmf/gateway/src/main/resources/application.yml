@@ -1,0 +1,36 @@
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: client-consumer1
+          uri: lb://client-consumer
+          predicates:
+            - Path=/consumer/**
+          filters:
+            - AddResponseHeader=message,consumer
+            - name: Hystrix
+              args:
+                name: fallbackConsumer
+                fallbackUri: forward:/fallbackConsumer
+        - id: order
+          uri: lb://order
+          predicates:
+            - Path=/order/**
+        - id: product
+          uri: lb://product
+          predicates:
+             - Path=/product/**
+
+  ##设置 Hystrix的commandKey的超时时间
+  hystrix.command.fallbackCmdA.execution.isolation.thread.timeoutInMilliseconds: 5000
+
+
+
+
+
+
+
+
+
+

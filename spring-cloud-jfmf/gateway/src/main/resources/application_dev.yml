@@ -1,0 +1,48 @@
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: client-consumer1
+          uri: lb://client-consumer
+          predicates:
+            - Path=/consumer/**
+            #匹配指定时间之后的路由
+            - After=2017-01-20T17:42:47.789-07:00
+            #匹配指定时间之前的路由
+            - Before=2017-01-20T17:42:47.789-07:00
+            #匹配两个指定时间之间的路由
+            - Between=2017-01-20T17:42:47.789-07:00[America/Denver], 2017-01-21T17:42:47.789-07:00[America/Denver]
+            #cookie名称和正则表达式。请求包含次cookie名称且正则表达式为真的将会被匹配。
+            - Cookie=chocolate, ch.p
+            - Header=X-Request-Id, \d+
+            #host name列表。使用Ant路径匹配规则，.作为分隔符。
+            - Host=**.somehost.org,**.anotherhost.org
+            #需要匹配的HTTP请求方式
+            - Method=GET
+            #有2个参数: 一个Spring PathMatcher表达式列表和可选matchOptionalTrailingSeparator标识
+            - Path=/foo/{segment},/bar/{segment}
+            #有2个参数: 必选项 param 和可选项 regexp
+            - Query=foo, ba.
+            #RemoteAddr 路由断言 Factory的参数为 一个CIDR符号（IPv4或IPv6）字符串的列表，最小值为1，
+            #例如192.168.0.1/16（其中192.168.0.1是IP地址并且16是子网掩码）。
+            - RemoteAddr=192.168.1.1/24
+          # 提供的过滤器有20多种
+          filters:
+            #对于所有匹配的请求，这将向下游请求的头中添加 x-request-foo:bar header
+            - AddRequestHeader=X-Request-Foo, Bar
+            # 匹配后，向下游增加参数school=yqyz
+            - AddRequestParam=school,yqyz
+            # 向返回的响应header中增加
+            - AddResponsHeader=school,yqyz
+
+
+
+
+
+
+
+
+
+
+

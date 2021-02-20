@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="clientconsumer.clientconsumer.consumer.mapper.UserMapper">
+
+    <resultMap id="userVo" type="clientconsumer.clientconsumer.consumer.vo.UserVo">
+        <result column="job_id" property="jobId"/>
+        <association select="jobList" property="job" column="columnJobId" javaType="clientconsumer.clientconsumer.consumer.domain.Job" >
+            <result column="job_name" property="jobName"/>
+            <result column="job_id" property="jobId"/>
+            <result column="describe" property="describe"/>
+            <result column="salary" property="salary" jdbcType="decimal" javaType="BigDecimal"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getUserList" resultMap="userVo" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        SELECT A.NAME ,A.TALL,A.LEVEL,A.JOB_ID job_id FROM consumer A
+        <where>
+            <if test="name!=null and name!=''">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="level!=null and level!=''">
+                and level = #{level}
+            </if>
+        </where>
+    </select>
+
+    <select id="jobList" parameterType="string" resultType="clientconsumer.clientconsumer.consumer.domain.Job">
+        SELECT * FROM JOB WHERE JOB_ID = #{jobId}
+    </select>
+    
+    <select id="selectPubOrgan"   resultType="java.lang.String" parameterType="java.lang.String">
+        select area_name from mag_or_supply_dept where dept_name = #{deptName}
+    </select>
+
+
+    <!-- association 使用  -->
+    <resultMap id="consumerMap" type="clientconsumer.clientconsumer.consumer.vo.ConsumerVo">
+        <association property="job" column="jobId" javaType="clientconsumer.clientconsumer.consumer.domain.Job" select="selectJob" />
+    </resultMap>
+    <select id="getConsumerVoList" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer" resultMap="consumerMap">
+        select name , tall,job_id jobId,level from consumer
+        <where>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="level!=null and level!=''">
+                and level = #{level}
+            </if>
+        </where>
+    </select>
+    <select id="selectJob" parameterType="string" resultType="clientconsumer.clientconsumer.consumer.domain.Job">
+        select * from job where job_id=#{id}
+    </select>
+
+
+    <!-- association 传递多个参数 -->
+    <resultMap id="consumerMap2" type="clientconsumer.clientconsumer.consumer.vo.ConsumerVo">
+        <result column="jobName" property="ssss" />
+        <association property="job" column="jobId=jobId,jobName=jobName" javaType="clientconsumer.clientconsumer.consumer.domain.Job" select="123selectJob"/>
+    </resultMap>
+    <select id="getConsumerVoList2" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer" resultMap="consumerMap2">
+        select name , tall,job_id jobId,level, "经理" jobName from consumer
+        <where>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="level!=null and level!=''">
+                and level = #{level}
+            </if>
+        </where>
+    </select>
+    <select id="123selectJob" parameterType="map" resultType="clientconsumer.clientconsumer.consumer.domain.Job">
+        <include refid="selectJobColumn"/> where job_id=#{jobId} and job_name=#{jobName}
+    </select>
+
+    <sql id="selectJobColumn"  >
+        select job_id jobId, job_name jobName,`describe`,salary from job
+    </sql>
+    <!-- collection -->
+
+    <resultMap id="jobVoMap" type="clientconsumer.clientconsumer.consumer.vo.JobVo">
+        <collection property="consumerList" select="selectConsumer" column="jobId"
+                  javaType="List"  ofType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        </collection>
+    </resultMap>
+    <select id="getJobVoList" parameterType="clientconsumer.clientconsumer.consumer.domain.Job"
+            resultMap="jobVoMap">
+        <include refid="selectJobColumn"/>
+        <where>
+            <if test="jobName!=null and jobName!=''">
+                and job_name = #{jobName}
+            </if>
+            <if test="describe!=null and describe!=''">
+                and `describe` like concat ('%',#{describe},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectConsumer" parameterType="string" resultType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        select id, JOB_ID jobId, NAME ,tall ,level  from consumer where job_id = #{jobId}
+    </select>
+
+
+    <!--transactional  start -->
+    <update id="updateAme" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        update consumer set name = #{name}  where id = #{id}
+    </update>
+    
+    <update id="updateJobDes" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        update job set `describe` = #{describe} where job_id = #{id}
+    </update>
+
+    
+    <!--transactional  end -->
+
+    <select id="selectList" parameterType="map" resultType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+
+        select id,name from consumer where 1=1
+         and id in
+        <foreach collection="map1" item="con" open="(" close=")" separator="," index="index">
+            #{con}
+        </foreach>
+
+
+    </select>
+
+    <update id="updateConsumer" parameterType="clientconsumer.clientconsumer.consumer.domain.Consumer">
+        update consumer set name = #{name} where id = #{id}
+    </update>
+
+    <update id="updateJobName" parameterType="string">
+        update job set job_name = #{jobName} where job_id=#{jobId};
+    </update>
+    <update id="updateJobNameDescribe" parameterType="string">
+        update job set job_name = #{jobName} where job_id=#{jobId} and `describe`=#{describe};
+    </update>
+
+    <select id="findByJobName" parameterType="string" resultType="clientconsumer.clientconsumer.consumer.domain.Job">
+        select job_id jobId, job_name jobName ,`describe`  from job where job_name = #{jobName}
+    </select>
+
+
+
+
+
+</mapper>

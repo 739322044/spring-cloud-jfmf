@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfmf.product.product.mapper.ProductMapper">
+
+    <insert id="saveProduct" parameterType="product">
+        INSERT INTO `jfmf`.`product` (`id`, `product_name`, `product_type`, `product_price`, `product_valid`)
+        VALUES (#{product.id}, '面膜', '1001', '235.0000', '1');
+    </insert>
+
+    <select id="selectProductInfoList" resultType="com.jfmf.product.product.domain.Product"
+            parameterType="com.jfmf.product.product.domain.Product" >
+        select `id` , `product_name` productName, `product_type` productType, `product_price` productPrice, `product_valid` productValid from  product
+        <where>
+            <if test="productName!=null and productName !=''" >
+                and product_name like concat ('%',#{productName},'%')
+            </if>
+            <if test="productType!=null  and productType !=''" >
+                and product_type = #{productType}
+            </if>
+        </where>
+    </select>
+
+    <update id="setProductNum" parameterType="com.jfmf.product.product.domain.Product" >
+        update product set product_num = #{productNum} where id = #{id}
+    </update>
+
+</mapper>
