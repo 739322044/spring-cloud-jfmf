@@ -15,7 +15,7 @@ public class CtrlShift {
     String a = "";
     //Ctrl+Shift+J：将选中的行合并成一行
     String a1 = "a1";
-    String a2 = "a2";
+    String a2 = "a";
     //Ctrl+N：查找类文件
     //
     //Ctrl+Shift+N：查找文件

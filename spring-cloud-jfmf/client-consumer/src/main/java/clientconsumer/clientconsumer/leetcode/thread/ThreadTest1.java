@@ -1,5 +1,6 @@
 package clientconsumer.clientconsumer.leetcode.thread;
 
+import java.util.ArrayList;
 import java.util.concurrent.CyclicBarrier;
 
 /**
@@ -12,7 +13,11 @@ import java.util.concurrent.CyclicBarrier;
 public class ThreadTest1 {
     public static void main(String[] args) {
         System.out.println('A'+1);
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(3);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("12");
+        arrayList.add("344");
+        arrayList.remove("12");
+
     }
 
     public void print(String str){
